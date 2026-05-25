@@ -271,7 +271,6 @@ function App() {
 
           <section className="challenge-hero">
             <div>
-              <p className="eyebrow">Local solo speedruns</p>
               <h1>Race through The Blue Alliance.</h1>
               <p className="intro">
                 Start on one FRC team page and reach the goal team using only links inside one randomized FRC season.
