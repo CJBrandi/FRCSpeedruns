@@ -37,7 +37,7 @@ describe('game helpers', () => {
 
   it('advances run state and finishes when target team is reached', () => {
     const run = createRun({ startTeam: 254, targetTeam: 1678, year: 2025 });
-    const middle = advanceRun(run, '/event/2024cmp');
+    const middle = advanceRun(run, '/team/4414/2025');
     const finished = advanceRun(middle, '/team/1678/2025');
 
     expect(middle.linksClicked).toBe(1);
@@ -45,6 +45,12 @@ describe('game helpers', () => {
     expect(finished.linksClicked).toBe(2);
     expect(finished.completed).toBe(true);
     expect(finished.currentTeam).toBe(1678);
+  });
+
+  it('ignores non-team paths during a run', () => {
+    const run = createRun({ startTeam: 254, targetTeam: 1678, year: 2025 });
+
+    expect(advanceRun(run, '/event/2025cacc')).toBe(run);
   });
 
   it('does not count reloads of the current page as new links', () => {

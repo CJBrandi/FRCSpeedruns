@@ -311,8 +311,8 @@ function App() {
                 <strong>Strict solo</strong>
               </div>
               <ul>
-                <li>Only proxied TBA links count.</li>
-                <li>The Teams tab is blocked.</li>
+                <li>Only proxied TBA team-page links count.</li>
+                <li>Event pages and the Teams tab are blocked.</li>
                 <li>Every run is locked to one random year.</li>
                 <li>External links are blocked during a run.</li>
                 <li>Ctrl+F is blocked while playing.</li>

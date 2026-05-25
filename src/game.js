@@ -71,6 +71,8 @@ export function advanceRun(run, nextPath) {
   if (normalizedPath === run.currentPath) return run;
 
   const currentTeam = teamFromPath(normalizedPath);
+  if (!currentTeam) return run;
+
   const reachedTarget = currentTeam === run.targetTeam;
 
   return {

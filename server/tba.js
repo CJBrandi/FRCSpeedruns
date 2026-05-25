@@ -259,7 +259,7 @@ export function pathMatchesYear(path, year) {
   const teamMatch = raw.match(/^\/team\/(\d{1,5})(?:\/(\d{4}))?(?:\/.*)?$/);
   if (teamMatch) return !teamMatch[2] || Number(teamMatch[2]) === Number(year);
 
-  return raw.includes(String(year));
+  return false;
 }
 
 export function normalizePathForYear(path, year) {
@@ -305,7 +305,9 @@ export function rewriteTbaHtml(html, { year } = {}) {
       const originalPath = `${url.pathname}${url.search}${url.hash}`;
       const proxiedPath = year ? normalizePathForYear(originalPath, year) : originalPath;
       if (!proxiedPath) {
-        const reason = isTeamsTab(originalPath) ? 'Teams tab is blocked during a run.' : `Only ${year} pages count for this run.`;
+        const reason = isTeamsTab(originalPath)
+          ? 'Teams tab is blocked during a run.'
+          : `Only team pages for ${year} are allowed during this run.`;
         return `<a${safeBefore} href="#" data-frc-speedrun-blocked-route="${reason}"${safeAfter}>`;
       }
 
@@ -393,7 +395,9 @@ export function rewriteTbaHtml(html, { year } = {}) {
 export async function fetchTbaPage(path, { year, fetchImpl = fetch } = {}) {
   const resolvedPath = year ? normalizePathForYear(resolveTbaPath(path), year) : resolveTbaPath(path);
   if (!resolvedPath) {
-    const error = new Error(year ? `Only ${year} The Blue Alliance pages can be proxied for this run.` : 'Only The Blue Alliance paths can be proxied.');
+    const error = new Error(
+      year ? `Only ${year} The Blue Alliance team pages can be proxied for this run.` : 'Only The Blue Alliance paths can be proxied.',
+    );
     error.status = 400;
     throw error;
   }

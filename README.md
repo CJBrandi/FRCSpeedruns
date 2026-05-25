@@ -1,6 +1,6 @@
 # FRC WikiRun
 
-FRC WikiRun is a local speedrun game for The Blue Alliance. A run starts on one FRC team page and ends when the player reaches the target team page using only links inside the embedded TBA site. Runs are locked to one FRC season, external links are blocked, the Teams tab is blocked, and the app tracks elapsed time plus link count.
+FRC WikiRun is a local speedrun game for The Blue Alliance. A run starts on one FRC team page and ends when the player reaches the target team page using only team-page links inside the embedded TBA site. Runs are locked to one FRC season, event pages and other non-team pages are blocked, external links are blocked, and the app tracks elapsed time plus link count.
 
 ## What the App Does
 
@@ -8,7 +8,7 @@ FRC WikiRun is a local speedrun game for The Blue Alliance. A run starts on one 
 - Starts a classic run from two manually entered teams, either in a specific year or in a random shared year.
 - Embeds The Blue Alliance through a local proxy so navigation can be restricted and measured.
 - Rewrites TBA links so internal navigation stays inside the local app.
-- Blocks external links, the Teams tab, search/year controls, and Ctrl+F during active runs.
+- Blocks event pages, non-team pages, external links, the Teams tab, search/year controls, and Ctrl+F during active runs.
 - Shows an in-run status island with goal team, current team, region, timer, selected year, and link count.
 - Saves the last 20 completed runs in browser `localStorage`.
 
@@ -252,8 +252,8 @@ Proxy helpers:
 
 - `resolveTbaPath()` accepts only paths or URLs from `https://www.thebluealliance.com`.
 - `isTeamsTab()` detects the TBA Teams listing.
-- `pathMatchesYear()` checks whether an event/team path belongs to the active run year.
-- `normalizePathForYear()` rewrites team paths to the active year and rejects invalid year-scoped routes.
+- `pathMatchesYear()` checks whether a team path belongs to the active run year.
+- `normalizePathForYear()` rewrites team paths to the active year and rejects event pages, non-team pages, and invalid year-scoped routes.
 - `rewriteTbaHtml()` rewrites the fetched TBA HTML so assets load from TBA, internal links go through `/proxy`, external links are blocked, and the run guard script is injected.
 - `fetchTbaPage()` fetches and rewrites a TBA page for the iframe.
 
@@ -267,7 +267,7 @@ When `rewriteTbaHtml()` sees an anchor tag:
 - Team links are forced into the selected run year.
 - External links are replaced with blocked-link markers.
 - The Teams tab is replaced with a blocked-route marker.
-- Pages that do not match the run year are blocked.
+- Event pages, non-team pages, and pages that do not match the run year are blocked.
 - `target="_blank"` is removed so links stay inside the iframe.
 
 When it sees assets such as CSS, images, scripts, sources, video, audio, or iframe tags:
@@ -388,6 +388,7 @@ The test suite covers:
 - TBA HTML rewriting.
 - External link blocking.
 - Teams tab blocking.
+- Event and non-team page blocking.
 - Year-scoped path enforcement.
 - Classic run validation.
 - Random run retries.

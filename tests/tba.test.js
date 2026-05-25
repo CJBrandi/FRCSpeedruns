@@ -97,13 +97,13 @@ describe('TBA helpers', () => {
     expect(html).not.toContain('integrity="abc"');
   });
 
-  it('blocks the teams tab and non-matching years for year-scoped runs', () => {
+  it('blocks non-team routes and non-matching years for year-scoped runs', () => {
     expect(normalizePathForYear('/team/254', 2025)).toBe('/team/254/2025');
     expect(normalizePathForYear('/team/254/2024', 2025)).toBe('/team/254/2025');
-    expect(normalizePathForYear('/event/2025cacc', 2025)).toBe('/event/2025cacc');
+    expect(normalizePathForYear('/event/2025cacc', 2025)).toBeNull();
     expect(normalizePathForYear('/event/2024cacc', 2025)).toBeNull();
     expect(normalizePathForYear('/teams', 2025)).toBeNull();
-    expect(pathMatchesYear('/events/ca/2025', 2025)).toBe(true);
+    expect(pathMatchesYear('/events/ca/2025', 2025)).toBe(false);
   });
 
   it('rewrites team links to the selected year and blocks the teams tab without an alert hook', () => {
@@ -119,7 +119,7 @@ describe('TBA helpers', () => {
 
     expect(html).toContain('data-frc-speedrun-blocked-route="Teams tab is blocked during a run."');
     expect(html).toContain('href="/proxy?path=%2Fteam%2F254%2F2025&year=2025"');
-    expect(html).toContain('data-frc-speedrun-blocked-route="Only 2025 pages count for this run."');
+    expect(html).toContain('data-frc-speedrun-blocked-route="Only team pages for 2025 are allowed during this run."');
     expect(html).not.toContain("window.alert('Teams tab is blocked during a run.");
     expect(html).toContain("window.alert('Find is blocked during FRC WikiRun.");
     expect(html).toContain("document.addEventListener('submit'");
