@@ -3,6 +3,7 @@ import {
   createClassicRun,
   fetchTbaTeams,
   getTeamFromPath,
+  isValidFrcYear,
   normalizePathForYear,
   pathMatchesYear,
   pickRandomPlayedRun,
@@ -26,6 +27,11 @@ describe('TBA helpers', () => {
   it('picks a random year inside the FRC era', () => {
     expect(pickRandomYear(() => 0, new Date('2026-05-25T00:00:00Z'))).toBe(2002);
     expect(pickRandomYear(() => 0.999, new Date('2026-05-25T00:00:00Z'))).toBe(2026);
+  });
+
+  it('excludes 2020 because the season was disrupted by COVID', () => {
+    expect(isValidFrcYear(2020, new Date('2026-05-25T00:00:00Z'))).toBe(false);
+    expect(pickRandomYear(() => 18 / 24, new Date('2026-05-25T00:00:00Z'))).toBe(2021);
   });
 
   it('reports missing TBA auth as a visible API error', async () => {
@@ -175,6 +181,31 @@ describe('TBA helpers', () => {
         '/api/v3/team/frc1678/years_participated': [2024, 2025],
         '/api/v3/team/frc254/events/2024/simple': [],
         '/api/v3/team/frc1678/events/2024/simple': [{ key: '2024cada' }],
+        '/api/v3/team/frc254/events/2025/simple': [{ key: '2025cacc' }],
+        '/api/v3/team/frc1678/events/2025/simple': [{ key: '2025cada' }],
+        '/api/v3/team/frc254': { key: 'frc254', team_number: 254, nickname: 'The Cheesy Poofs' },
+        '/api/v3/team/frc1678': { key: 'frc1678', team_number: 1678, nickname: 'Citrus Circuits' },
+        '/api/v3/team/frc254/districts': [],
+        '/api/v3/team/frc1678/districts': [],
+      };
+      return { ok: true, json: async () => bodies[path] };
+    };
+
+    const run = await createClassicRun(254, 1678, {
+      authKey: 'key',
+      fetchImpl,
+      random: () => 0,
+    });
+
+    expect(run.year).toBe(2025);
+  });
+
+  it('skips 2020 for random shared classic years', async () => {
+    const fetchImpl = async (url) => {
+      const path = new URL(url).pathname;
+      const bodies = {
+        '/api/v3/team/frc254/years_participated': [2020, 2025],
+        '/api/v3/team/frc1678/years_participated': [2020, 2025],
         '/api/v3/team/frc254/events/2025/simple': [{ key: '2025cacc' }],
         '/api/v3/team/frc1678/events/2025/simple': [{ key: '2025cada' }],
         '/api/v3/team/frc254': { key: 'frc254', team_number: 254, nickname: 'The Cheesy Poofs' },

@@ -1,6 +1,7 @@
 const TBA_ORIGIN = 'https://www.thebluealliance.com';
 const FIRST_FRC_YEAR = 2002;
 const TBA_MAX_TEAM_PAGE = 30;
+const EXCLUDED_FRC_YEARS = new Set([2020]);
 const teamYearCache = new Map();
 
 export const SAMPLE_TEAMS = [
@@ -40,12 +41,14 @@ export function currentFrcYear(now = new Date()) {
 }
 
 export function isValidFrcYear(year, now = new Date()) {
-  return Number.isInteger(year) && year >= FIRST_FRC_YEAR && year <= currentFrcYear(now);
+  return Number.isInteger(year) && year >= FIRST_FRC_YEAR && year <= currentFrcYear(now) && !EXCLUDED_FRC_YEARS.has(year);
 }
 
 export function pickRandomYear(random = Math.random, now = new Date()) {
-  const current = currentFrcYear(now);
-  return FIRST_FRC_YEAR + Math.floor(random() * (current - FIRST_FRC_YEAR + 1));
+  const years = Array.from({ length: currentFrcYear(now) - FIRST_FRC_YEAR + 1 }, (_, index) => FIRST_FRC_YEAR + index).filter((year) =>
+    isValidFrcYear(year, now),
+  );
+  return years[Math.floor(random() * years.length)];
 }
 
 export function summarizeRegion(team, district) {
@@ -158,7 +161,7 @@ export async function fetchCommonYears(startTeam, targetTeam, authKey, fetchImpl
   ]);
 
   const targetSet = new Set(targetYears);
-  return startYears.filter((year) => targetSet.has(year));
+  return startYears.filter((year) => targetSet.has(year) && isValidFrcYear(year));
 }
 
 export async function requireTeamsPlayedInYear(startTeam, targetTeam, year, authKey, fetchImpl = fetch) {
