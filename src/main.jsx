@@ -395,9 +395,9 @@ function App() {
           {active && (
             <aside className="run-island" aria-label="Active run status">
               <div>
-                <span>Goal</span>
-                <strong>{run.targetTeam}</strong>
-                <small>{run.targetRegion}</small>
+                <span>Current</span>
+                <strong>{run.currentTeam || 'TBA'}</strong>
+                <small>{currentRegion}</small>
               </div>
               <div>
                 <span>Time</span>
@@ -406,9 +406,9 @@ function App() {
               </div>
               <button onClick={giveUp}>Give Up</button>
               <div>
-                <span>Current</span>
-                <strong>{run.currentTeam || 'TBA'}</strong>
-                <small>{currentRegion}</small>
+                <span>Goal</span>
+                <strong>{run.targetTeam}</strong>
+                <small>{run.targetRegion}</small>
               </div>
               <div>
                 <span>Links</span>
